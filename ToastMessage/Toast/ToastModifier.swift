@@ -22,17 +22,31 @@ struct ToastModifier: ViewModifier {
     // MARK: - Body
     
     func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .overlay {
-                ZStack {
-                    toastView() // Display the toast view overlay
-                        .offset(y: -30) // Position adjustment
-                }.animation(.spring(), value: toast)    // Animate toast appearance/disappearance
-            }
-            .onChange(of: toast, {
-                showToast() // Show the toast when `toast` changes
-            })
+        if #available(iOS 17.0, *) {
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .overlay {
+                    ZStack {
+                        toastView() // Display the toast view overlay
+                            .offset(y: -30) // Position adjustment
+                    }.animation(.spring(), value: toast)    // Animate toast appearance/disappearance
+                }
+                .onChange(of: toast, {
+                    showToast() // Show the toast when `toast` changes
+                })
+        } else {
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .overlay {
+                    ZStack {
+                        toastView() // Display the toast view overlay
+                            .offset(y: -30) // Position adjustment
+                    }.animation(.spring(), value: toast)    // Animate toast appearance/disappearance
+                }
+                .onChange(of: toast) { value in
+                    showToast() // Show the toast when `toast` changes
+                }
+        }
     }
     
     // MARK: - Toast View
